@@ -2,10 +2,8 @@
 #include <vector>
 #include <algorithm>
 #include <chrono>
-#include <random>
 
 using namespace std;
-using namespace std::chrono;
 
 void selectionSort(vector<int>& arr) {
     int n = arr.size();
@@ -20,36 +18,28 @@ void selectionSort(vector<int>& arr) {
     }
 }
 
-void measureExecutionTime(vector<int>& arr, const string& caseType) {
-    vector<int> tempArr = arr;
-    auto start = high_resolution_clock::now();
-    selectionSort(tempArr);
-    auto end = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(end - start).count();
-    cout << "Selection Sort (" << caseType << " case): " << duration << " microseconds\n";
+void measureTime(vector<int>& arr, const string& caseType) {
+    chrono::high_resolution_clock::time_point start = chrono::high_resolution_clock::now();
+    selectionSort(arr);
+    chrono::high_resolution_clock::time_point end = chrono::high_resolution_clock::now();
+    chrono::microseconds duration = chrono::duration_cast<chrono::microseconds>(end - start);
+    cout << "Selection Sort (" << caseType << " case): " << duration.count() << " microseconds\n";
 }
 
 int main() {
-    int n = 1000;
-    
-    // Best case: already sorted array
-    vector<int> bestCase(n);
+    int n = 10000;
+    vector<int> bestCase(n), avgCase(n), worstCase(n);
     for (int i = 0; i < n; i++) bestCase[i] = i;
-
-    // Average case: random shuffled array
-    vector<int> avgCase = bestCase;
-    random_device rd;
-    mt19937 g(rd());
-    shuffle(avgCase.begin(), avgCase.end(), g);
-
-    // Worst case: sorted in descending order
-    vector<int> worstCase = bestCase;
+    
+    avgCase = bestCase;
+    random_shuffle(avgCase.begin(), avgCase.end());
+    
+    worstCase = bestCase;
     reverse(worstCase.begin(), worstCase.end());
-
-    cout << "Execution Times for Selection Sort:\n";
-    measureExecutionTime(bestCase, "Best");
-    measureExecutionTime(avgCase, "Average");
-    measureExecutionTime(worstCase, "Worst");
-
+    
+    measureTime(bestCase, "Best");
+    measureTime(avgCase, "Average");
+    measureTime(worstCase, "Worst");
+    
     return 0;
 }
